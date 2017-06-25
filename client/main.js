@@ -7,7 +7,11 @@ import { Players } from '../imports/api/players';
 
 const renderPlayers = function (playersList) {
   return playersList.map(function (player) {
-    return <p key={player._id}>{player.name} has {player.score} point(s)</p>;
+    return (
+      <div>
+        <p key={player._id}>{player.name} has {player.score} point(s)</p>
+      </div>
+    );
   });
   
   // ES6 syntax!
@@ -16,10 +20,18 @@ const renderPlayers = function (playersList) {
   // });
 };
 
-const handleSubmit = function (event) {
+const handleSubmit = function(event) {
+  let playerName = event.target.playerName.value;
+  
   event.preventDefault();
   
-  
+  if (playerName) {
+    event.target.playerName.value = '';
+    Players.insert({
+      name: playerName,
+      score: 0
+    });
+  }
 };
 
 Meteor.startup(function () {
@@ -28,9 +40,11 @@ Meteor.startup(function () {
   // Render players to the screen
   Tracker.autorun(function () {
     let players = Players.find().fetch();
+    let title = 'Score Keep';
     let name = 'Taylor';
     let jsx = (
       <div>
+        <h1>{title}</h1>
         <p>Hello {name}</p>
         <p>Below is the list of scores.</p>
         {renderPlayers(players)}
@@ -43,11 +57,5 @@ Meteor.startup(function () {
     );
     
     ReactDOM.render(jsx, document.getElementById('app'));
-  });
-  
-  // Insert new doc into players collection.
-  Players.insert({
-    name: 'Travis',
-    score: 1232,
   });
 });
