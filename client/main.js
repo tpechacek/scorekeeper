@@ -5,12 +5,21 @@ import { Tracker } from 'meteor/tracker';
 
 import { Players } from '../imports/api/players';
 
-const renderPlayers = function (playersList) {
-  return playersList.map(function (player) {
+const renderPlayers = (playersList) => {
+  return playersList.map((player) => {
     return (
-      <div>
-        <p key={player._id}>{player.name} has {player.score} point(s)</p>
-      </div>
+      <p key={player._id}>
+        {player.name} has {player.score} point(s).
+        <button onClick={() => {
+          Players.update({_id: player._id}, { $inc: {score: 1}});
+        }}>+1</button>
+        <button onClick={() => {
+          Players.update({_id: player._id}, { $inc: {score: -1}});
+        }}>-1</button>
+        <button onClick={() => {
+          Players.remove({_id: player._id });
+        }}>X</button>
+      </p>
     );
   });
   
@@ -20,7 +29,7 @@ const renderPlayers = function (playersList) {
   // });
 };
 
-const handleSubmit = function(event) {
+const handleSubmit = (event) => {
   let playerName = event.target.playerName.value;
   
   event.preventDefault();
@@ -34,11 +43,11 @@ const handleSubmit = function(event) {
   }
 };
 
-Meteor.startup(function () {
+Meteor.startup(() => {
   // Call tracker.autorun
   // Create variable called players -> set equal to Players.find().fetch())
   // Render players to the screen
-  Tracker.autorun(function () {
+  Tracker.autorun(() => {
     let players = Players.find().fetch();
     let title = 'Score Keep';
     let name = 'Taylor';
